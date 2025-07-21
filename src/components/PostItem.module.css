@@ -1,4 +1,7 @@
 .task {
   display: flex;
-  background-color: aliceblue;
+  justify-content: space-between;
+  max-width: 600px;
+  margin: 20px auto;
+  border-bottom: 1px solid black;
 }
