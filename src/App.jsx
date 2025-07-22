@@ -1,23 +1,25 @@
 import { useEffect, useState } from 'react';
-import { PostItem } from './components/PostItem';
+import { TaskItem } from './components/TaskItem';
+import { CreateTask } from './components/CreateTask';
+import './App.css';
+
+const SERVER_URL = 'https://jsonplaceholder.typicode.com/todos/';
 
 export default function App() {
-  const [posts, setPosts] = useState([]);
+  const [todos, setTodos] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Получение списка
   const fetchPost = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+      const response = await fetch(SERVER_URL);
 
-      if (!response.ok) {
-        throw new Error('Проблема с загрузкой постов');
-      }
+      if (!response.ok) throw new Error('Не удалость загрузить список задач');
 
       const data = await response.json();
-
-      setPosts(data);
+      setTodos(data);
       setIsLoading(false);
     } catch (error) {
       setError(error);
@@ -29,9 +31,10 @@ export default function App() {
     fetchPost();
   }, []);
 
-  const updatePost = async (id, payload) => {
+  // Изменение
+  const updateTask = async (id, payload) => {
     try {
-      const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
+      const response = await fetch(SERVER_URL + id, {
         method: 'PATCH',
         body: JSON.stringify({
           ...payload,
@@ -41,43 +44,41 @@ export default function App() {
         },
       });
 
-      if (!response.ok) {
-        throw new Error('Проблема при запросе на редактирование');
-      }
+      if (!response.ok) throw new Error('Ошибка при запросе на редактирование');
 
-      const newPost = await response.json();
+      const updatedTask = await response.json();
+      let updatedData = Object.values(todos).map((todo) =>
+        todo.id === id ? updatedTask : todo
+      );
 
-      const postIndex = posts.findIndex((post) => post.id === id);
-      const copyPost = [...posts];
-      copyPost[postIndex] = newPost;
-
-      setPosts(copyPost);
+      setTodos(updatedData);
     } catch (error) {
       setError(error);
     }
   };
-  const deletePost = async (id) => {
+
+  // Удаление
+  const deleteTask = async (id) => {
     try {
-      const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
+      const response = await fetch(SERVER_URL + id, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'Application/json',
         },
       });
 
-      if (!response.ok) {
-        throw new Error('Ошибка при удалении заметки');
-      }
+      if (!response.ok) throw new Error('Ошибка при удалении');
 
-      setPosts((prevState) => prevState.filter((post) => post.id !== id));
+      setTodos((prevState) => prevState.filter((task) => task.id !== id));
     } catch (error) {
       setError(error);
     }
   };
 
-  const createPost = async (payload) => {
+  // Создание
+  const createTask = async (payload) => {
     try {
-      const response = await fetch(`https://jsonplaceholder.typicode.com/posts/`, {
+      const response = await fetch(SERVER_URL, {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: {
@@ -85,38 +86,37 @@ export default function App() {
         },
       });
 
-      if (!response.ok) {
-        throw new Error('Ошибка при создании заметки');
-      }
+      if (!response.ok) throw new Error('Ошибка при создании');
 
       const newTask = await response.json();
       console.log(newTask);
 
-      setPosts([...posts, newTask]);
+      setTodos([...todos, newTask]);
     } catch (error) {
       setError(error);
     }
   };
 
   if (isLoading) {
-    return <h1>...Loading</h1>;
+    return <h1 className="loader"></h1>;
   }
-
   if (error) {
     return <h1>{error}</h1>;
   }
 
   return (
-    <ul>
-      {posts.map((post) => (
-        <PostItem
-          {...post}
-          key={post.id}
-          deletePost={deletePost}
-          updatePost={updatePost}
-          createPost={createPost}
-        />
-      ))}
-    </ul>
+    <div className="tasksContainer">
+      <CreateTask createTask={createTask} />
+      <ul>
+        {todos.map((task) => (
+          <TaskItem
+            {...task}
+            key={task.id}
+            deleteTask={deleteTask}
+            updateTask={updateTask}
+          />
+        ))}
+      </ul>
+    </div>
   );
 }

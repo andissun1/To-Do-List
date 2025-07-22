@@ -1,0 +1,33 @@
+.tasksContainer {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 10px;
+  background-color: #ecedf6;
+
+  border-radius: 10px;
+  font-size: 18px;
+}
+
+.loader {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 3px solid gray;
+
+  border-left-color: transparent;
+  animation: loader 1s linear infinite;
+}
+
+@keyframes loader {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
