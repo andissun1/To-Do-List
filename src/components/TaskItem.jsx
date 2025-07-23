@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DeleteTask } from './DeleteTask';
+import { TaskWithDeleteOption } from './DeleteTask';
 import { Editor } from './Editor';
 
 export function TaskItem({ id, title, deleteTask, updateTask, completed }) {
@@ -18,7 +18,7 @@ export function TaskItem({ id, title, deleteTask, updateTask, completed }) {
           completed={completed}
         />
       ) : (
-        <DeleteTask
+        <TaskWithDeleteOption
           id={id}
           completed={completed}
           handleEdit={handleEdit}

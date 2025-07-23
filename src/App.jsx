@@ -100,6 +100,7 @@ export default function App() {
   if (isLoading) {
     return <h1 className="loader"></h1>;
   }
+
   if (error) {
     return <h1>{error}</h1>;
   }

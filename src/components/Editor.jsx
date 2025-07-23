@@ -1,8 +1,8 @@
 import styles from './TaskItem.module.css';
 import { useState } from 'react';
 
-export function Editor({ id, title, handleEdit, updateTask }) {
-  const [data, setData] = useState({ title });
+export function Editor({ id, title, handleEdit, updateTask, completed }) {
+  const [data, setData] = useState({ title, completed });
 
   const onSave = (id) => {
     updateTask(id, data).finally(() => handleEdit());
@@ -14,17 +14,18 @@ export function Editor({ id, title, handleEdit, updateTask }) {
     setData({
       ...data,
       [name]: value,
+      completed: data.completed,
     });
   };
 
+  function handleCompleted() {
+    setData({ ...data, completed: !data.completed });
+  }
+
   return (
-    // Остаётся дописать логику по изменению готовности задачек
     <div className={styles.task}>
       <input name="title" type="text" value={data.title} onChange={onChange} />
-      <div className={styles.checkbox}>
-        <label htmlFor="Checkbox">Выполнено:</label>
-        <input name="Checkbox" type="checkbox" />
-      </div>
+      <input type="checkbox" checked={data.completed} onChange={handleCompleted} />
       <div>
         <button onClick={() => onSave(id)}>Сохранить</button>
         <button onClick={handleEdit}>Отмена</button>

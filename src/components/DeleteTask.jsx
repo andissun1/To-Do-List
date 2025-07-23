@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from './TaskItem.module.css';
 
-export function DeleteTask({ id, title, handleEdit, deleteTask, completed }) {
+export function TaskWithDeleteOption({ id, title, handleEdit, deleteTask, completed }) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   async function onDelete(id) {
