@@ -1,8 +1,14 @@
-import styles from './TaskItem.module.css';
+import { useState } from 'react';
+import { SortButtons } from './SortButtons';
 
-export function CreateTask({ createTask }) {
+export function CreateTask({ createTask, sortByAlphabet, sortById }) {
+  const [isOpenFilters, setIsOpenFilters] = useState(false);
+
   const onSubmit = (e) => {
     e.preventDefault();
+
+    if (isOpenFilters) {
+    }
 
     const payload = {
       title: e.target.newTask.value,
@@ -13,12 +19,29 @@ export function CreateTask({ createTask }) {
     createTask(payload);
   };
 
+  function openFilters() {
+    setIsOpenFilters((prevstate) => !prevstate);
+  }
+
   return (
-    <div className={styles.taskCreator}>
-      <form onSubmit={onSubmit}>
-        <input id="newTask" type="text" />
-        <button type="submit">Создать</button>
-      </form>
-    </div>
+    <>
+      <>
+        <form onSubmit={onSubmit}>
+          <input id="newTask" type="text" />
+          <button type="submit">{isOpenFilters ? 'Найти' : 'Создать'}</button>
+        </form>
+        {isOpenFilters ? (
+          <SortButtons
+            sortById={sortById}
+            sortByAlphabet={sortByAlphabet}
+            openFilters={openFilters}
+          />
+        ) : (
+          <button onClick={openFilters} type="submit">
+            Сортировка
+          </button>
+        )}
+      </>
+    </>
   );
 }

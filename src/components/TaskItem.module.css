@@ -1,7 +1,7 @@
 /* Поле создания задачи */
 .taskCreator {
   display: flex;
-  justify-content: left;
+  justify-content: space-between;
 
   background-color: white;
   margin: 0 -12px;
@@ -11,6 +11,7 @@
 
 .taskCreator form {
   display: flex;
+  align-items: center;
   margin-left: 20px;
 }
 
@@ -38,7 +39,7 @@ ul {
 }
 
 .task li {
-  max-width: 80%;
+  max-width: 85%;
   overflow: hidden;
 }
 
@@ -78,8 +79,37 @@ button {
   float: right;
 }
 
+.SortButtons {
+  width: 50%;
+  font-size: 10px;
+}
+
 @media (max-width: 600px) {
+  .SortButtons {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    font-size: 10px;
+  }
+
+  .taskCreator {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+
+  .taskCreator form {
+    width: 70%;
+    margin: 0;
+  }
+
   .task > div {
     width: 100px;
+  }
+
+  .task {
+    margin: 10px 0;
   }
 }

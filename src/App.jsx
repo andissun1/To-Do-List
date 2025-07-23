@@ -1,20 +1,25 @@
 import { useEffect, useState } from 'react';
 import { TaskItem } from './components/TaskItem';
 import { CreateTask } from './components/CreateTask';
+import { SortButtons } from './components/SortButtons';
+import styles from '../src/components/TaskItem.module.css';
 import './App.css';
 
-const SERVER_URL = 'https://jsonplaceholder.typicode.com/todos/';
+const SERVER_URL = 'http://localhost:3000/todos';
 
 export default function App() {
   const [todos, setTodos] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [sortedBy, setSortedBy] = useState('');
+  const [filters, setFilters] = useState({ byId: 'desc', byAlphabet: 'desc' });
+  console.log(filters);
 
   // Получение списка
-  const fetchPost = async () => {
+  const fetchPost = async (sortedBy = '') => {
     setIsLoading(true);
     try {
-      const response = await fetch(SERVER_URL);
+      const response = await fetch(SERVER_URL + sortedBy);
 
       if (!response.ok) throw new Error('Не удалость загрузить список задач');
 
@@ -28,13 +33,13 @@ export default function App() {
   };
 
   useEffect(() => {
-    fetchPost();
-  }, []);
+    fetchPost(sortedBy);
+  }, [sortedBy]);
 
   // Изменение
   const updateTask = async (id, payload) => {
     try {
-      const response = await fetch(SERVER_URL + id, {
+      const response = await fetch(SERVER_URL + '/' + id, {
         method: 'PATCH',
         body: JSON.stringify({
           ...payload,
@@ -60,7 +65,7 @@ export default function App() {
   // Удаление
   const deleteTask = async (id) => {
     try {
-      const response = await fetch(SERVER_URL + id, {
+      const response = await fetch(SERVER_URL + '/' + id, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'Application/json',
@@ -97,6 +102,25 @@ export default function App() {
     }
   };
 
+  // Сортировка
+  const sortOnServer = (activateSort) => {
+    setSortedBy(activateSort);
+  };
+
+  function sortById() {
+    const toggler = filters.byId === 'asc' ? 'desc' : 'asc';
+
+    setFilters({ ...filters, byId: toggler });
+    sortOnServer(`?_sort=id&_order=${filters.byId}`);
+  }
+
+  function sortByAlphabet() {
+    const toggler = filters.byAlphabet === 'asc' ? 'desc' : 'asc';
+
+    setFilters({ ...filters, byAlphabet: toggler });
+    sortOnServer(`?_sort=title&_order=${filters.byAlphabet}`);
+  }
+
   if (isLoading) {
     return <h1 className="loader"></h1>;
   }
@@ -107,7 +131,14 @@ export default function App() {
 
   return (
     <div className="tasksContainer">
-      <CreateTask createTask={createTask} />
+      <header className={styles.taskCreator}>
+        <CreateTask
+          createTask={createTask}
+          sortOnServer={sortOnServer}
+          sortById={sortById}
+          sortByAlphabet={sortByAlphabet}
+        />
+      </header>
       <ul>
         {todos.map((task) => (
           <TaskItem
