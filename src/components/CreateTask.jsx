@@ -1,14 +1,17 @@
 import { useState } from 'react';
 import { SortButtons } from './SortButtons';
 
-export function CreateTask({ createTask, sortByAlphabet, sortById }) {
+export function CreateTask({
+  createTask,
+  sortByAlphabet,
+  sortById,
+  sortOnServer,
+  filters,
+}) {
   const [isOpenFilters, setIsOpenFilters] = useState(false);
 
   const onSubmit = (e) => {
     e.preventDefault();
-
-    if (isOpenFilters) {
-    }
 
     const payload = {
       title: e.target.newTask.value,
@@ -25,23 +28,25 @@ export function CreateTask({ createTask, sortByAlphabet, sortById }) {
 
   return (
     <>
-      <>
-        <form onSubmit={onSubmit}>
-          <input id="newTask" type="text" />
-          <button type="submit">{isOpenFilters ? 'Найти' : 'Создать'}</button>
-        </form>
-        {isOpenFilters ? (
-          <SortButtons
-            sortById={sortById}
-            sortByAlphabet={sortByAlphabet}
-            openFilters={openFilters}
-          />
-        ) : (
+      {isOpenFilters ? (
+        <SortButtons
+          sortById={sortById}
+          sortByAlphabet={sortByAlphabet}
+          openFilters={openFilters}
+          sortOnServer={sortOnServer}
+          filters={filters}
+        />
+      ) : (
+        <>
+          <form onSubmit={onSubmit}>
+            <input id="newTask" type="text" />
+            <button type="submit">Создать</button>
+          </form>
           <button onClick={openFilters} type="submit">
             Сортировка
           </button>
-        )}
-      </>
+        </>
+      )}
     </>
   );
 }

@@ -11,9 +11,12 @@ export default function App() {
   const [todos, setTodos] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Состояние для запросов на сервер SERVER_URL + sort
   const [sortedBy, setSortedBy] = useState('');
+
+  // Состояние для переключения элементов интерфейса
   const [filters, setFilters] = useState({ byId: 'desc', byAlphabet: 'desc' });
-  console.log(filters);
 
   // Получение списка
   const fetchPost = async (sortedBy = '') => {
@@ -121,7 +124,7 @@ export default function App() {
     sortOnServer(`?_sort=title&_order=${filters.byAlphabet}`);
   }
 
-  if (isLoading) {
+  if (isLoading && sortedBy === '') {
     return <h1 className="loader"></h1>;
   }
 
@@ -137,6 +140,7 @@ export default function App() {
           sortOnServer={sortOnServer}
           sortById={sortById}
           sortByAlphabet={sortByAlphabet}
+          filters={filters}
         />
       </header>
       <ul>
