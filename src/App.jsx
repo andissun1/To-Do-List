@@ -17,7 +17,7 @@ export default function App() {
     const serverData = ref(db, 'todos' + filters.URL);
 
     onValue(serverData, (snapshot) => {
-      const loadedTodos = snapshot.val();
+      const loadedTodos = snapshot.val() || [];
 
       setTodos(loadedTodos);
       setIsLoading(false);
