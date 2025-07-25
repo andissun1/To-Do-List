@@ -1,108 +1,48 @@
 import { useEffect, useState } from 'react';
 import { TaskItem } from './components/TaskItem';
 import { CreateTask } from './components/CreateTask';
-import { SortButtons } from './components/SortButtons';
+import { ref, onValue, update, remove, push } from 'firebase/database';
+import { db } from './firebase';
 import styles from '../src/components/TaskItem.module.css';
 import './App.css';
 
-const SERVER_URL = 'http://localhost:3000/todos';
-
 export default function App() {
-  const [todos, setTodos] = useState([]);
+  const [todos, setTodos] = useState({});
   const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [filters, setFilters] = useState({ byId: 'desc', byAlphabet: 'desc', URL: '' });
 
-  // Состояние для запросов на сервер SERVER_URL + sort
-  const [sortedBy, setSortedBy] = useState('');
-
-  // Состояние для переключения элементов интерфейса
-  const [filters, setFilters] = useState({ byId: 'desc', byAlphabet: 'desc' });
-
-  // Получение списка
-  const fetchPost = async (sortedBy = '') => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(SERVER_URL + sortedBy);
-
-      if (!response.ok) throw new Error('Не удалость загрузить список задач');
-
-      const data = await response.json();
-      setTodos(data);
-      setIsLoading(false);
-    } catch (error) {
-      setError(error);
-      setIsLoading(false);
-    }
-  };
-
+  // Получение
   useEffect(() => {
-    fetchPost(sortedBy);
-  }, [sortedBy]);
+    const serverData = ref(db, 'todos' + filters.URL);
+
+    onValue(serverData, (snapshot) => {
+      const loadedTodos = snapshot.val();
+
+      setTodos(loadedTodos);
+      setIsLoading(false);
+    });
+  }, []);
 
   // Изменение
-  const updateTask = async (id, payload) => {
-    try {
-      const response = await fetch(SERVER_URL + '/' + id, {
-        method: 'PATCH',
-        body: JSON.stringify({
-          ...payload,
-        }),
-        headers: {
-          'Content-Type': 'Application/json',
-        },
-      });
+  const updateTask = (id, payload) => {
+    const serverData = ref(db, 'todos/' + id);
 
-      if (!response.ok) throw new Error('Ошибка при запросе на редактирование');
-
-      const updatedTask = await response.json();
-      let updatedData = Object.values(todos).map((todo) =>
-        todo.id === id ? updatedTask : todo
-      );
-
-      setTodos(updatedData);
-    } catch (error) {
-      setError(error);
-    }
+    update(serverData, { ...payload }).catch(() =>
+      setError('Ошибка при запросе на редактирование')
+    );
   };
 
   // Удаление
   const deleteTask = async (id) => {
-    try {
-      const response = await fetch(SERVER_URL + '/' + id, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'Application/json',
-        },
-      });
-
-      if (!response.ok) throw new Error('Ошибка при удалении');
-
-      setTodos((prevState) => prevState.filter((task) => task.id !== id));
-    } catch (error) {
-      setError(error);
-    }
+    const serverData = ref(db, 'todos/' + id);
+    remove(serverData);
   };
 
   // Создание
   const createTask = async (payload) => {
-    try {
-      const response = await fetch(SERVER_URL, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) throw new Error('Ошибка при создании');
-
-      const newTask = await response.json();
-      console.log(newTask);
-
-      setTodos([...todos, newTask]);
-    } catch (error) {
-      setError(error);
-    }
+    const serverData = ref(db, 'todos');
+    push(serverData, payload).catch((error) => setError('Ошибка при создании объекта'));
   };
 
   // Сортировка
@@ -124,12 +64,10 @@ export default function App() {
     sortOnServer(`?_sort=title&_order=${filters.byAlphabet}`);
   }
 
-  if (isLoading && sortedBy === '') {
-    return <h1 className="loader"></h1>;
-  }
-
   if (error) {
     return <h1>{error}</h1>;
+  } else if (isLoading && filters.URL === '') {
+    return <h1 className="loader"></h1>;
   }
 
   return (
@@ -144,10 +82,11 @@ export default function App() {
         />
       </header>
       <ul>
-        {todos.map((task) => (
+        {Object.entries(todos).map(([id, task]) => (
           <TaskItem
             {...task}
-            key={task.id}
+            id={id}
+            key={id}
             deleteTask={deleteTask}
             updateTask={updateTask}
           />

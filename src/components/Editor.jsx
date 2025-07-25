@@ -5,7 +5,8 @@ export function Editor({ id, title, handleEdit, updateTask, completed }) {
   const [data, setData] = useState({ title, completed });
 
   const onSave = (id) => {
-    updateTask(id, data).finally(() => handleEdit());
+    updateTask(id, data);
+    handleEdit();
   };
 
   const onChange = (e) => {

@@ -15,7 +15,7 @@ export function CreateTask({
 
     const payload = {
       title: e.target.newTask.value,
-      body: '',
+      completed: false,
     };
 
     e.target.newTask.value = '';
