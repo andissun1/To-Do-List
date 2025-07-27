@@ -1,24 +1,24 @@
-import { useState } from 'react';
 import styles from './TaskItem.module.css';
+import { debounce } from '../utils';
 
 export function SortButtons({
   openFilters,
   sortByAlphabet,
   sortById,
-  sortOnServer,
+  clientSearch,
   filters,
 }) {
-  const [value, setValue] = useState('');
-
-  function search({ target }) {
-    setValue(target.value);
-    sortOnServer('?q=' + value);
-  }
+  let debouncedSearch = debounce((value) => clientSearch(value), 250);
 
   return (
     <>
       <div className={styles.search}>
-        <input id="newTask" type="text" value={value} onChange={search} />
+        <input
+          type="text"
+          onChange={({ target }) => {
+            debouncedSearch(target.value);
+          }}
+        />
         <button type="submit"> Поиск </button>
       </div>
       <div className={styles.SortButtons}>

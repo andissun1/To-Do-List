@@ -4,22 +4,26 @@ import { CreateTask } from './components/CreateTask';
 import { ref, onValue, update, remove, push } from 'firebase/database';
 import { db } from './firebase';
 import styles from '../src/components/TaskItem.module.css';
-import './App.css';
 
 export default function App() {
   const [todos, setTodos] = useState({});
+  const [serverData, setServerData] = useState({});
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [filters, setFilters] = useState({ byId: 'desc', byAlphabet: 'desc', URL: '' });
+  const [filters, setFilters] = useState({
+    byId: 'desc',
+    byAlphabet: 'desc',
+  });
 
   // Получение
   useEffect(() => {
-    const serverData = ref(db, 'todos' + filters.URL);
+    const serverData = ref(db, 'todos');
 
-    onValue(serverData, (snapshot) => {
-      const loadedTodos = snapshot.val();
+    return onValue(serverData, (snapshot) => {
+      const loadedTodos = snapshot.val() || [];
 
       setTodos(loadedTodos);
+      setServerData(loadedTodos);
       setIsLoading(false);
     });
   }, []);
@@ -46,36 +50,62 @@ export default function App() {
   };
 
   // Сортировка
-  const sortOnServer = (activateSort) => {
-    setSortedBy(activateSort);
+  const findTask = (inputValue) => {
+    console.log(serverData);
+
+    let resultsOfSearch = Object.entries(serverData).filter(([keys, values]) =>
+      values.title.toLowerCase().includes(inputValue.toLowerCase())
+    );
+
+    setTodos(Object.fromEntries(resultsOfSearch));
   };
 
   function sortById() {
     const toggler = filters.byId === 'asc' ? 'desc' : 'asc';
+    let resultsOfSort = Object.entries(serverData);
+
+    if (toggler === 'asc') {
+      resultsOfSort.sort(([key1, val1], [key2, val2]) => val1.date - val2.date);
+    } else {
+      resultsOfSort.sort(([key1, val1], [key2, val2]) => val2.date - val1.date);
+    }
 
     setFilters({ ...filters, byId: toggler });
-    sortOnServer(`?_sort=id&_order=${filters.byId}`);
+
+    setTodos(Object.fromEntries(resultsOfSort));
   }
 
   function sortByAlphabet() {
     const toggler = filters.byAlphabet === 'asc' ? 'desc' : 'asc';
+    let resultsOfSort = Object.entries(serverData);
+
+    if (toggler === 'asc') {
+      resultsOfSort.sort(([key1, val1], [key2, val2]) =>
+        val1.title.localeCompare(val2.title)
+      );
+    } else {
+      resultsOfSort.sort(([key1, val1], [key2, val2]) =>
+        val2.title.localeCompare(val1.title)
+      );
+    }
 
     setFilters({ ...filters, byAlphabet: toggler });
-    sortOnServer(`?_sort=title&_order=${filters.byAlphabet}`);
+
+    setTodos(Object.fromEntries(resultsOfSort));
   }
 
   if (error) {
     return <h1>{error}</h1>;
-  } else if (isLoading && filters.URL === '') {
-    return <h1 className="loader"></h1>;
+  } else if (isLoading) {
+    return <h1 className={styles.loader}></h1>;
   }
 
   return (
-    <div className="tasksContainer">
+    <div className={styles.tasksContainer}>
       <header className={styles.taskCreator}>
         <CreateTask
           createTask={createTask}
-          sortOnServer={sortOnServer}
+          clientSearch={findTask}
           sortById={sortById}
           sortByAlphabet={sortByAlphabet}
           filters={filters}

@@ -5,20 +5,22 @@ export function CreateTask({
   createTask,
   sortByAlphabet,
   sortById,
-  sortOnServer,
+  clientSearch,
   filters,
 }) {
   const [isOpenFilters, setIsOpenFilters] = useState(false);
 
   const onSubmit = (e) => {
     e.preventDefault();
+    const { newTask } = e.target;
 
     const payload = {
-      title: e.target.newTask.value,
+      title: newTask.value,
+      date: Date.now(),
       completed: false,
     };
 
-    e.target.newTask.value = '';
+    newTask.value = '';
     createTask(payload);
   };
 
@@ -33,7 +35,7 @@ export function CreateTask({
           sortById={sortById}
           sortByAlphabet={sortByAlphabet}
           openFilters={openFilters}
-          sortOnServer={sortOnServer}
+          clientSearch={clientSearch}
           filters={filters}
         />
       ) : (
