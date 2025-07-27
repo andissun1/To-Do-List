@@ -20,7 +20,7 @@ export default function App() {
     const serverData = ref(db, 'todos');
 
     return onValue(serverData, (snapshot) => {
-      const loadedTodos = snapshot.val() || [];
+      const loadedTodos = snapshot.val() || [] || [];
 
       setTodos(loadedTodos);
       setServerData(loadedTodos);
