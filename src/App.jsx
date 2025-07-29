@@ -13,6 +13,8 @@ export default function App() {
   const [filters, setFilters] = useState({
     byId: 'desc',
     byAlphabet: 'desc',
+    searchPhrase: null,
+    activeFilter: null,
   });
 
   // Получение
@@ -20,13 +22,30 @@ export default function App() {
     const serverData = ref(db, 'todos');
 
     return onValue(serverData, (snapshot) => {
-      const loadedTodos = snapshot.val() || [] || [];
+      const loadedTodos = snapshot.val() || {};
 
-      setTodos(loadedTodos);
+      switch (filters.activeFilter) {
+        case 'search':
+          findTask(filters.searchPhrase, loadedTodos);
+          break;
+
+        case 'byId':
+          sortById(loadedTodos);
+          break;
+
+        case 'byAlphabet':
+          sortByAlphabet(loadedTodos);
+          break;
+
+        default:
+          setTodos(loadedTodos);
+          break;
+      }
+
       setServerData(loadedTodos);
       setIsLoading(false);
     });
-  }, []);
+  }, [filters]);
 
   // Изменение
   const updateTask = (id, payload) => {
@@ -49,20 +68,37 @@ export default function App() {
     push(serverData, payload).catch((error) => setError('Ошибка при создании объекта'));
   };
 
-  // Сортировка
-  const findTask = (inputValue) => {
-    console.log(serverData);
-
-    let resultsOfSearch = Object.entries(serverData).filter(([keys, values]) =>
+  // Поиск
+  function findTask(inputValue, loadedTodos) {
+    let resultsOfSearch = Object.entries(
+      typeof loadedTodos === 'undefined' ? serverData : loadedTodos
+    ).filter(([keys, values]) =>
       values.title.toLowerCase().includes(inputValue.toLowerCase())
     );
 
     setTodos(Object.fromEntries(resultsOfSearch));
-  };
 
-  function sortById() {
-    const toggler = filters.byId === 'asc' ? 'desc' : 'asc';
-    let resultsOfSort = Object.entries(serverData);
+    if (!loadedTodos) {
+      setFilters({ ...filters, activeFilter: 'search', searchPhrase: inputValue });
+    }
+  }
+
+  function clearSearch() {
+    setFilters({ ...filters, searchPhrase: null, activeFilter: null });
+  }
+
+  // Сортировка по дате
+  function sortById(loadedTodos) {
+    let toggler = filters.byId;
+
+    if (!loadedTodos) {
+      toggler = filters.byId === 'asc' ? 'desc' : 'asc';
+      setFilters({ ...filters, byId: toggler, activeFilter: 'byId' });
+    }
+
+    let resultsOfSort = loadedTodos
+      ? Object.entries(loadedTodos)
+      : Object.entries(serverData);
 
     if (toggler === 'asc') {
       resultsOfSort.sort(([key1, val1], [key2, val2]) => val1.date - val2.date);
@@ -70,14 +106,21 @@ export default function App() {
       resultsOfSort.sort(([key1, val1], [key2, val2]) => val2.date - val1.date);
     }
 
-    setFilters({ ...filters, byId: toggler });
-
     setTodos(Object.fromEntries(resultsOfSort));
   }
 
-  function sortByAlphabet() {
-    const toggler = filters.byAlphabet === 'asc' ? 'desc' : 'asc';
-    let resultsOfSort = Object.entries(serverData);
+  // Сортировка по алфавиту
+  function sortByAlphabet(loadedTodos) {
+    let toggler = filters.byAlphabet;
+
+    if (!loadedTodos) {
+      toggler = filters.byAlphabet === 'asc' ? 'desc' : 'asc';
+      setFilters({ ...filters, byAlphabet: toggler, activeFilter: 'byAlphabet' });
+    }
+
+    let resultsOfSort = loadedTodos
+      ? Object.entries(loadedTodos)
+      : Object.entries(serverData);
 
     if (toggler === 'asc') {
       resultsOfSort.sort(([key1, val1], [key2, val2]) =>
@@ -89,14 +132,16 @@ export default function App() {
       );
     }
 
-    setFilters({ ...filters, byAlphabet: toggler });
-
     setTodos(Object.fromEntries(resultsOfSort));
   }
 
+  // Показ ошибок
   if (error) {
     return <h1>{error}</h1>;
-  } else if (isLoading) {
+  }
+
+  // Загрузка
+  function Loader() {
     return <h1 className={styles.loader}></h1>;
   }
 
@@ -109,18 +154,23 @@ export default function App() {
           sortById={sortById}
           sortByAlphabet={sortByAlphabet}
           filters={filters}
+          clearSearch={clearSearch}
         />
       </header>
       <ul>
-        {Object.entries(todos).map(([id, task]) => (
-          <TaskItem
-            {...task}
-            id={id}
-            key={id}
-            deleteTask={deleteTask}
-            updateTask={updateTask}
-          />
-        ))}
+        {isLoading ? (
+          <Loader />
+        ) : (
+          Object.entries(todos).map(([id, task]) => (
+            <TaskItem
+              {...task}
+              id={id}
+              key={id}
+              deleteTask={deleteTask}
+              updateTask={updateTask}
+            />
+          ))
+        )}
       </ul>
     </div>
   );

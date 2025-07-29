@@ -7,6 +7,7 @@ export function CreateTask({
   sortById,
   clientSearch,
   filters,
+  clearSearch,
 }) {
   const [isOpenFilters, setIsOpenFilters] = useState(false);
 
@@ -37,6 +38,7 @@ export function CreateTask({
           openFilters={openFilters}
           clientSearch={clientSearch}
           filters={filters}
+          clearSearch={clearSearch}
         />
       ) : (
         <>

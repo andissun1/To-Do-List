@@ -31,9 +31,8 @@ export function Editor({ id, title, handleEdit, updateTask, completed }) {
 
   return (
     <div className={styles.task}>
-      <input
+      <textarea
         name="title"
-        type="text"
         value={data.title}
         onChange={onChange}
         onKeyDown={handleOnKeyDown}

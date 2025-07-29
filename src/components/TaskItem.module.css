@@ -114,6 +114,17 @@ input[type='checkbox'] {
   margin-left: 10px;
 }
 
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+
+  height: 100px;
+  width: 80%;
+  padding: 0;
+  margin-left: 10px;
+  border: #646ff0;
+}
+
 /* Оформление всех кнопок */
 button {
   border: none;
