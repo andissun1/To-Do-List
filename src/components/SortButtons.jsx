@@ -12,7 +12,7 @@ export function SortButtons({
 
   function search({ target }) {
     setValue(target.value);
-    sortOnServer('?q=' + value);
+    sortOnServer('?q=' + target.value);
   }
 
   return (

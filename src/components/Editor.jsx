@@ -1,11 +1,14 @@
 import styles from './TaskItem.module.css';
 import { useState } from 'react';
 
-export function Editor({ id, title, handleEdit, updateTask, completed }) {
+export function Editor({ id, title, handleEdit, updateTask, completed = false }) {
   const [data, setData] = useState({ title, completed });
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const onSave = (id) => {
+    setIsUpdating(true);
     updateTask(id, data).finally(() => handleEdit());
+    setIsUpdating(false);
   };
 
   const onChange = (e) => {
@@ -39,7 +42,9 @@ export function Editor({ id, title, handleEdit, updateTask, completed }) {
       />
       <input type="checkbox" checked={data.completed} onChange={handleCompleted} />
       <div>
-        <button onClick={() => onSave(id)}>Сохранить</button>
+        <button onClick={() => onSave(id)} disabled={isUpdating}>
+          Сохранить
+        </button>
         <button onClick={handleEdit}>Отмена</button>
       </div>
     </div>

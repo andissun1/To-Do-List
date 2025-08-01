@@ -39,50 +39,6 @@ export default function App() {
     fetchPost(sortedBy);
   }, [sortedBy]);
 
-  // Изменение
-  const updateTask = async (id, payload) => {
-    try {
-      const response = await fetch(SERVER_URL + '/' + id, {
-        method: 'PATCH',
-        body: JSON.stringify({
-          ...payload,
-        }),
-        headers: {
-          'Content-Type': 'Application/json',
-        },
-      });
-
-      if (!response.ok) throw new Error('Ошибка при запросе на редактирование');
-
-      const updatedTask = await response.json();
-      let updatedData = Object.values(todos).map((todo) =>
-        todo.id === id ? updatedTask : todo
-      );
-
-      setTodos(updatedData);
-    } catch (error) {
-      setError(error);
-    }
-  };
-
-  // Удаление
-  const deleteTask = async (id) => {
-    try {
-      const response = await fetch(SERVER_URL + '/' + id, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'Application/json',
-        },
-      });
-
-      if (!response.ok) throw new Error('Ошибка при удалении');
-
-      setTodos((prevState) => prevState.filter((task) => task.id !== id));
-    } catch (error) {
-      setError(error);
-    }
-  };
-
   // Создание
   const createTask = async (payload) => {
     try {
@@ -147,13 +103,7 @@ export default function App() {
         {todos.map((task) => (
           <div key={task.id}>
             <Link to={`/task/${task.id}`}>
-              <TaskItem
-                {...task}
-                key={task.id}
-                deleteTask={deleteTask}
-                updateTask={updateTask}
-                SERVER_URL={SERVER_URL}
-              />
+              <TaskItem {...task} key={task.id} />
             </Link>
           </div>
         ))}

@@ -15,7 +15,9 @@ export function TaskWithDeleteOption({ id, title, handleEdit, deleteTask, comple
       {isDeleting ? (
         'Удаление'
       ) : (
-        <li className={`${completed ? styles.done : styles.undone}`}>{title}</li>
+        <li className={`${completed ? styles.done : styles.undone} task_page`}>
+          {title}
+        </li>
       )}
       <div>
         <button disabled={isDeleting} onClick={() => onDelete(id)}>

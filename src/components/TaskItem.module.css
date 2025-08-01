@@ -39,9 +39,11 @@ ul {
   padding: 0;
 }
 
-.task li {
-  max-width: 85%;
+:global .task_li {
+  max-width: 100%;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .done {
