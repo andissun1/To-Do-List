@@ -11,7 +11,7 @@ export function TaskWithDeleteOption({ id, title, handleEdit, deleteTask, comple
   }
 
   return (
-    <div className={styles.task}>
+    <div className={styles.taskPageContainer}>
       {isDeleting ? (
         'Удаление'
       ) : (

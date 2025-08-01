@@ -32,7 +32,7 @@ export function Editor({ id, title, handleEdit, updateTask, completed = false })
   }
 
   return (
-    <div className={styles.task}>
+    <div className={styles.taskPageContainer}>
       <input
         name="title"
         type="text"

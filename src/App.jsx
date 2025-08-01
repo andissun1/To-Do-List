@@ -4,8 +4,7 @@ import { CreateTask } from './components/CreateTask';
 import styles from '../src/components/TaskItem.module.css';
 import './App.css';
 import { Link } from 'react-router-dom';
-
-const SERVER_URL = 'http://localhost:3000/todos';
+import { SERVER_URL } from './constants';
 
 export default function App() {
   const [todos, setTodos] = useState([]);
