@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { TaskItem } from './components/TaskItem';
 import { CreateTask } from './components/CreateTask';
 import { ref, onValue, update, remove, push } from 'firebase/database';
-import { db } from './firebase';
+import { auth, db } from './firebase';
 import styles from '../src/components/TaskItem.module.css';
+import { signOut } from 'firebase/auth';
 
-export default function App() {
+export default function App({ user }) {
   const [todos, setTodos] = useState({});
   const [serverData, setServerData] = useState({});
   const [error, setError] = useState(null);
@@ -17,9 +18,11 @@ export default function App() {
     activeFilter: null,
   });
 
+  if (!user) return;
+
   // Получение
   useEffect(() => {
-    const serverData = ref(db, 'todos');
+    const serverData = ref(db, `users/${user}/todos`);
 
     return onValue(serverData, (snapshot) => {
       const loadedTodos = snapshot.val() || {};
@@ -49,7 +52,7 @@ export default function App() {
 
   // Изменение
   const updateTask = (id, payload) => {
-    const serverData = ref(db, 'todos/' + id);
+    const serverData = ref(db, `users/${user}/todos/${id}`);
 
     update(serverData, { ...payload }).catch(() =>
       setError('Ошибка при запросе на редактирование')
@@ -58,13 +61,13 @@ export default function App() {
 
   // Удаление
   const deleteTask = async (id) => {
-    const serverData = ref(db, 'todos/' + id);
+    const serverData = ref(db, `users/${user}/todos/${id}`);
     remove(serverData);
   };
 
   // Создание
   const createTask = async (payload) => {
-    const serverData = ref(db, 'todos');
+    const serverData = ref(db, `users/${user}/todos`);
     push(serverData, payload).catch((error) => setError('Ошибка при создании объекта'));
   };
 
@@ -145,6 +148,16 @@ export default function App() {
     return <h1 className={styles.loader}></h1>;
   }
 
+  //Выйти из аккаунта
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      console.log('Выход из аккаунта');
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <div className={styles.tasksContainer}>
       <header className={styles.taskCreator}>
@@ -155,6 +168,7 @@ export default function App() {
           sortByAlphabet={sortByAlphabet}
           filters={filters}
           clearSearch={clearSearch}
+          handleSignOut={handleSignOut}
         />
       </header>
       <ul>

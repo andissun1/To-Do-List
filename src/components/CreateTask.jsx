@@ -8,6 +8,7 @@ export function CreateTask({
   clientSearch,
   filters,
   clearSearch,
+  handleSignOut,
 }) {
   const [isOpenFilters, setIsOpenFilters] = useState(false);
 
@@ -46,9 +47,12 @@ export function CreateTask({
             <input id="newTask" type="text" />
             <button type="submit">Создать</button>
           </form>
-          <button onClick={openFilters} type="submit">
-            Сортировка
-          </button>
+          <div>
+            <button onClick={openFilters} type="submit">
+              Сортировка
+            </button>
+            <button onClick={handleSignOut}>Выйти</button>
+          </div>
         </>
       )}
     </>
