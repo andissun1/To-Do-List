@@ -1,3 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Kaushan+Script&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Pacifico&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
 :root {
-  background: #f8f8ff;
+  background-color: rgb(218 231 233);
+  background-image: url('./images/background/Небо.png');
+  background-position: top;
+  background-size: 100vw;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+
+  font-family: 'Roboto', sans-serif;
 }

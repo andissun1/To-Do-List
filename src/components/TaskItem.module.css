@@ -3,7 +3,7 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 10px;
-  background-color: #ecedf6;
+  background-color: #e5f3fb;
 
   border-radius: 10px;
 
@@ -128,15 +128,21 @@ textarea {
 /* Оформление всех кнопок */
 button {
   border: none;
-  padding: 7px 10px;
-  border-radius: 10px;
+  padding: 7px 8px;
   margin: 5px;
 
-  background-color: #646ff0;
+  background: linear-gradient(to bottom right, #00a2d2, #1f91dc);
   color: white;
-  font-weight: 500;
+  font-weight: normal;
 
   float: right;
+
+  border: 1px solid transparent;
+  border-radius: 13px;
+}
+
+button:active {
+  border-color: white;
 }
 
 .SortButtons {

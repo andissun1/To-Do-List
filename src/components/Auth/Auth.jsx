@@ -6,6 +6,7 @@ import {
 import { auth, db } from '../../firebase';
 import { Navigate } from 'react-router-dom';
 import { child, get, ref, set } from 'firebase/database';
+import style from './Auth.module.css';
 
 export const Auth = ({ user }) => {
   const [isSignUpActive, setIsSignUpActive] = useState(false);
@@ -62,38 +63,37 @@ export const Auth = ({ user }) => {
 
   return (
     <section>
-      <h2>Homepage</h2>
+      {isSignUpActive ? <h2>Регистрация</h2> : <h2>Вход</h2>}
       <form>
-        {isSignUpActive ? <legend>Sign Up</legend> : <legend>Sign In</legend>}
-        <fieldset>
-          <ul>
-            <li>
-              <label htmlFor="email">Email</label>
-              <input name="email" type="text" id="email" onChange={handleChangeInputs} />
-            </li>
-            <li>
-              <label htmlFor="password">Password</label>
-              <input
-                name="password"
-                type="current-password"
-                id="password"
-                onChange={handleChangeInputs}
-              />
-            </li>
-          </ul>
+        <fieldset className={style.authForm}>
+          <div>
+            <label htmlFor="email">Email</label>
+            <input name="email" type="text" id="email" onChange={handleChangeInputs} />
+          </div>
+
+          <div>
+            <label htmlFor="password">Пароль</label>
+            <input
+              name="password"
+              type="current-password"
+              id="password"
+              onChange={handleChangeInputs}
+            />
+          </div>
+
           {isSignUpActive ? (
             <>
               <button type="button" onClick={handleSignUp}>
-                Sign Up
+                Зарегистриоваться
               </button>
-              <a onClick={handleMethodChange}>Sign In</a>
+              <a onClick={handleMethodChange}>Войти</a>
             </>
           ) : (
             <>
               <button type="button" onClick={handleSignIn}>
-                Sign In
+                Войти
               </button>
-              <a onClick={handleMethodChange}>Create an account</a>
+              <a onClick={handleMethodChange}>Создать аккаунт</a>
             </>
           )}
         </fieldset>
