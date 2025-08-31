@@ -1,11 +1,19 @@
 import styles from './TaskItem.module.css';
 import { useState } from 'react';
+import { createLinks } from '../utils';
 
 export function Editor({ id, title, handleEdit, updateTask, completed }) {
   const [data, setData] = useState({ title, completed });
 
   const onSave = (id) => {
-    updateTask(id, data);
+    if (data.title.includes('://')) {
+      const { links, newTitle } = createLinks(data.title);
+      let payload = { ...data, title: newTitle, links };
+      updateTask(id, payload);
+    } else {
+      updateTask(id, data);
+    }
+
     handleEdit();
   };
 
@@ -24,9 +32,9 @@ export function Editor({ id, title, handleEdit, updateTask, completed }) {
   }
 
   function handleOnKeyDown(event) {
-    if (event.key === 'Enter') {
-      onSave(id);
-    }
+    // if (event.key === 'Enter') {
+    //   onSave(id);
+    // }
   }
 
   return (

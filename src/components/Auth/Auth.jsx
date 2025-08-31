@@ -64,15 +64,15 @@ export const Auth = ({ user }) => {
   return (
     <section>
       {isSignUpActive ? <h2>Регистрация</h2> : <h2>Вход</h2>}
-      <form>
+      <form autoComplete="on">
         <fieldset className={style.authForm}>
           <div>
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">Почта:</label>
             <input name="email" type="text" id="email" onChange={handleChangeInputs} />
           </div>
 
           <div>
-            <label htmlFor="password">Пароль</label>
+            <label htmlFor="password">Пароль:</label>
             <input
               name="password"
               type="current-password"

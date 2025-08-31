@@ -18,8 +18,6 @@ export default function App({ user }) {
     activeFilter: null,
   });
 
-  if (!user) return;
-
   // Получение
   useEffect(() => {
     const serverData = ref(db, `users/${user}/todos`);

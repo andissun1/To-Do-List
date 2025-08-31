@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { SortButtons } from './SortButtons';
+import { createLinks } from '../utils';
 
 export function CreateTask({
   createTask,
@@ -16,13 +17,19 @@ export function CreateTask({
     e.preventDefault();
     const { newTask } = e.target;
 
-    const payload = {
+    let payload = {
       title: newTask.value,
       date: Date.now(),
       completed: false,
     };
 
     newTask.value = '';
+
+    if (payload.title.includes('://')) {
+      const { links, newTitle } = createLinks(payload.title);
+      payload = { ...payload, title: newTitle, links };
+    }
+
     createTask(payload);
   };
 
