@@ -31,7 +31,6 @@ export function SortButtons({
             setInputValue('');
           }}
         >
-          {' '}
           {inputValue ? 'Очистить' : 'Поиск'}
         </button>
       </div>

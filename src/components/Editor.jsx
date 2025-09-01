@@ -1,6 +1,7 @@
 import styles from './TaskItem.module.css';
 import { useState } from 'react';
 import { createLinks } from '../utils';
+import { Icon } from './ui/Icons/Icon';
 
 export function Editor({ id, title, handleEdit, updateTask, completed }) {
   const [data, setData] = useState({ title, completed });
@@ -47,8 +48,21 @@ export function Editor({ id, title, handleEdit, updateTask, completed }) {
       />
       <input type="checkbox" checked={data.completed} onChange={handleCompleted} />
       <div>
-        <button onClick={() => onSave(id)}>Сохранить</button>
-        <button onClick={handleEdit}>Отмена</button>
+        <button onClick={() => onSave(id)}>
+          <Icon name="done" />
+        </button>
+        <button
+          onClick={() => {
+            alert(
+              'Привет! В скором времени будет возможность загружать изображения. Пока что кнопка с картинкой для красоты ✨'
+            );
+          }}
+        >
+          <Icon name="image" />
+        </button>
+        <button onClick={handleEdit}>
+          <Icon name="cansel" />
+        </button>
       </div>
     </div>
   );

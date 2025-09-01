@@ -9,8 +9,6 @@ export function debounce(func, timeout = 300) {
 }
 
 export const createLinks = (text) => {
-  console.log(text);
-
   const links = text.match(
     /(?:https?:\/\/)?(?:www\.)?(?:[\da-z-]+\.)+[a-z]{2,10}(?:\/[^\s/]+)*\/?/gi
   );

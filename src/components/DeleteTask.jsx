@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styles from './TaskItem.module.css';
+import { Icon } from './ui/Icons/Icon';
 
 export function TaskWithDeleteOption({
   id,
@@ -53,9 +54,11 @@ export function TaskWithDeleteOption({
           disabled={isDeleting}
           onClick={() => onDelete(id)}
         >
-          🗙
+          <Icon name="delete" />
         </button>
-        <button onClick={handleEdit}> ✎ </button>
+        <button onClick={handleEdit}>
+          <Icon name="edit" />
+        </button>
       </div>
     </div>
   );
