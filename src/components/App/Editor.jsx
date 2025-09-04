@@ -1,10 +1,18 @@
-import styles from './TaskItem.module.css';
+import styles from './Todos.module.css';
 import { useState } from 'react';
-import { createLinks } from '../utils';
-import { Icon } from './ui/Icons/Icon';
+import { createLinks } from '../../utils';
+import { Icon } from '../ui/Icons/Icon';
+import { ref, update } from 'firebase/database';
+import { db } from '../../firebase';
 
-export function Editor({ id, title, handleEdit, updateTask, completed }) {
+export function Editor({ id, title, handleEdit, user, completed }) {
   const [data, setData] = useState({ title, completed });
+
+  function handleOnKeyDown(event) {
+    if (event.key === 'Enter' && event.ctrlKey) {
+      onSave(id);
+    }
+  }
 
   const onSave = (id) => {
     if (data.title.includes('://')) {
@@ -20,7 +28,6 @@ export function Editor({ id, title, handleEdit, updateTask, completed }) {
 
   const onChange = (e) => {
     const { name, value } = e.target;
-
     setData({
       ...data,
       [name]: value,
@@ -32,11 +39,20 @@ export function Editor({ id, title, handleEdit, updateTask, completed }) {
     setData({ ...data, completed: !data.completed });
   }
 
-  function handleOnKeyDown(event) {
-    // if (event.key === 'Enter') {
-    //   onSave(id);
-    // }
-  }
+  // Изменение
+  const updateTask = (id, payload) => {
+    const serverData = ref(db, `users/${user}/todos/${id}`);
+    update(serverData, { ...payload }).catch(() =>
+      setError('Ошибка при запросе на редактирование')
+    );
+  };
+
+  // Загрузка изображений
+  const uploadFile = () => {
+    alert(
+      'Привет! В скором времени будет возможность загружать изображения. Пока что кнопка с картинкой для красоты ✨'
+    );
+  };
 
   return (
     <div className={styles.task}>
@@ -51,13 +67,7 @@ export function Editor({ id, title, handleEdit, updateTask, completed }) {
         <button onClick={() => onSave(id)}>
           <Icon name="done" />
         </button>
-        <button
-          onClick={() => {
-            alert(
-              'Привет! В скором времени будет возможность загружать изображения. Пока что кнопка с картинкой для красоты ✨'
-            );
-          }}
-        >
+        <button onClick={() => uploadFile()}>
           <Icon name="image" />
         </button>
         <button onClick={handleEdit}>

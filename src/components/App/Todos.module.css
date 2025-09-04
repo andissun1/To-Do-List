@@ -73,14 +73,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: relative;
 
   background-color: white;
   border-radius: 3px;
 
   margin: 10px;
   padding: 15px;
-  white-space: pre-wrap;
 }
 
 /* Сброс стандартного отступа слева */
@@ -89,8 +87,7 @@ ul {
 }
 
 .task li {
-  width: 100%;
-  overflow: hidden;
+  white-space: pre-wrap;
 }
 
 .done {
@@ -102,7 +99,8 @@ ul {
 }
 
 /* Оформление всех вводов */
-input[type='text'] {
+.search input,
+.createTaskInput {
   font-size: 16px;
   height: 20px;
   width: 60%;
@@ -153,8 +151,8 @@ button:active {
   border-color: white;
 }
 
-.SortButtons {
-  /* font-size: 10px; */
+.SortButtons button {
+  width: max-content;
 }
 
 .deleteButton {
@@ -192,24 +190,12 @@ button:active {
     display: flex;
     flex-direction: row-reverse;
     align-items: center;
-    justify-content: center;
-    width: 100%;
-    font-size: 10px;
   }
 
   .taskCreator {
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
-  }
-
-  .taskCreator form {
-    width: 70%;
-    margin: 0;
-  }
-
-  .task > div {
-    width: 100px;
   }
 
   .task {

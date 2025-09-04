@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { TaskWithDeleteOption } from './DeleteTask';
+import { useState } from 'react';
+import { TaskWithDeleteOption } from './Task';
 import { Editor } from './Editor';
 
-export function TaskItem({ id, title, deleteTask, updateTask, completed, links }) {
+export function TaskItem({ id, title, updateTask, completed, links, user }) {
   const [isEdit, setIsEdit] = useState(false);
 
   const handleEdit = () => setIsEdit((prevState) => !prevState);
@@ -16,6 +16,7 @@ export function TaskItem({ id, title, deleteTask, updateTask, completed, links }
           title={title}
           handleEdit={handleEdit}
           completed={completed}
+          user={user}
         />
       ) : (
         <TaskWithDeleteOption
@@ -24,7 +25,7 @@ export function TaskItem({ id, title, deleteTask, updateTask, completed, links }
           handleEdit={handleEdit}
           title={title}
           links={links}
-          deleteTask={deleteTask}
+          user={user}
         />
       )}
     </>

@@ -78,3 +78,8 @@ label:first-of-type {
 .authForm a:active {
   transform: scale(0.95);
 }
+
+.error {
+  color: red;
+  font-size: small;
+}
