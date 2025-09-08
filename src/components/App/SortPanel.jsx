@@ -18,7 +18,7 @@ export function SortPanel({ openFilters, sort, clientSearch }) {
   };
 
   const handleSortButton = (type) => {
-    const status = sort('byAlphabet');
+    const status = sort(type);
     setSortTogglers({ ...sortTogglers, [type]: status });
   };
 

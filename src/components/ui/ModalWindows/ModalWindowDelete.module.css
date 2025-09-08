@@ -1,0 +1,31 @@
+/* Модалка c удалением */
+.modalWindow {
+  display: grid;
+  position: absolute;
+  gap: 5px;
+
+  background-color: #ed365b;
+
+  border-radius: 13px;
+  padding: 10px;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+
+  font-size: 14px;
+  text-align: center;
+  color: white;
+
+  margin-top: -110px;
+  margin-left: -84px;
+
+  width: 200px;
+}
+
+.modalWindow span {
+  grid-column: span 2;
+}
+
+@media (max-width: 1000px) {
+  .modalWindow {
+    margin-left: -167px;
+  }
+}

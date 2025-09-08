@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
+import { useUserContext } from '../../Contexts/userContext';
 import { useEffect, useState } from 'react';
 import { Input } from './Input';
 import { Navigate } from 'react-router-dom';
@@ -22,7 +23,7 @@ const scheme = {
   },
 };
 
-export const Auth = ({ user }) => {
+export const Auth = () => {
   const [isSignUpActive, setIsSignUpActive] = useState(false);
   const [startValidation, setStartValidation] = useState(false);
   const [error, setError] = useState([]);
@@ -30,6 +31,7 @@ export const Auth = ({ user }) => {
     email: '',
     password: '',
   });
+  const user = useUserContext();
 
   useEffect(() => {
     if (startValidation) {
@@ -38,10 +40,9 @@ export const Auth = ({ user }) => {
     }
   }, [formData]);
 
-  // Если авторизован, то перекинуть на приложение
   if (user) return <Navigate to={'/App'} />;
 
-  // Вход или создание аккаунта
+  // Вход
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errors = validator(formData, scheme);
@@ -59,14 +60,14 @@ export const Auth = ({ user }) => {
         const userID = user.email.replace(/@.*/, '');
         createStore(userID);
       } else {
-        const response = await signInWithEmailAndPassword(auth, email, password);
+        await signInWithEmailAndPassword(auth, email, password);
       }
     } catch (error) {
       console.log(error.code, error.message);
     }
   };
 
-  // Загружаем шаблон обучающих заметок и ставим в новое хранилище
+  // Создание страртового шаблона для новых пользователей
   const createStore = async (userID) => {
     try {
       const dbTodos = ref(db);

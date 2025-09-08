@@ -1,58 +1,42 @@
 import { useState } from 'react';
 import styles from './Todos.module.css';
 import { Icon } from '../ui/Icons/Icon';
-import { ref, remove } from 'firebase/database';
-import { db } from '../../firebase';
+import { ModalWindowDelete } from '../ui/ModalWindows/ModalWindowDelete';
+import { useServerContext } from '../../Contexts/serverRequests';
+import { Links } from '../ui/Links/Links';
 
-export function TaskWithDeleteOption({ id, title, handleEdit, completed, links, user }) {
+export function TaskWithDeleteOption({ handleEdit, task }) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const { deleteTask } = useServerContext();
+  const { links } = task[1];
 
-  async function onDelete(id) {
+  async function onDelete() {
     setIsDeleting(true);
-    await deleteTask(id);
+    await deleteTask(task[0]);
     setIsDeleting(false);
   }
-
-  // Удаление
-  const deleteTask = async (id) => {
-    const serverData = ref(db, `users/${user}/todos/${id}`);
-    remove(serverData);
-  };
-
-  const Link = () =>
-    Object.entries(links).map(([key, value]) => {
-      const hostname = new URL(value).hostname;
-      const size = '64';
-
-      return (
-        <a key={key} href={value} target="blank" className={styles.links}>
-          <img
-            height="16px"
-            width="16px"
-            src={`http://www.google.com/s2/favicons?domain=${hostname}&sz=${size}`}
-          />
-          {hostname}
-        </a>
-      );
-    });
 
   return (
     <div className={styles.task}>
       {isDeleting ? (
-        'Удаление'
+        'Удаление...'
       ) : (
-        <li className={`${completed ? styles.done : styles.undone}`}>
-          {title}
+        <li className={`${task[1].completed ? styles.done : styles.undone}`}>
+          {task[1].title}
           <div className={links ? styles.linksContainer : null}>
-            {links ? <Link /> : null}
+            {links && <Links links={links} />}
           </div>
         </li>
       )}
       <div>
+        {confirmDelete && (
+          <ModalWindowDelete deleteTask={onDelete} setConfirmDelete={setConfirmDelete} />
+        )}
         <button
           className={styles.deleteButton}
           disabled={isDeleting}
-          onClick={() => onDelete(id)}
+          onClick={() => setConfirmDelete((prevState) => !prevState)}
         >
           <Icon name="delete" />
         </button>

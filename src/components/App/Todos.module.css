@@ -110,17 +110,14 @@ input[type='checkbox'] {
   height: 20px;
   width: 20px;
   padding: 0;
-  margin-left: 10px;
 }
 
 textarea {
   font-family: inherit;
   font-size: inherit;
 
-  height: 100px;
-  width: 80%;
+  field-sizing: content;
   padding: 0;
-  margin-left: 10px;
   border: #646ff0;
 }
 
@@ -145,6 +142,8 @@ button {
 
   border: 1px solid transparent;
   border-radius: 13px;
+
+  cursor: pointer;
 }
 
 button:active {
@@ -160,29 +159,91 @@ button:active {
   background-color: #ed365b;
 }
 
-/* Оформление ссылок */
-.linksContainer {
-  background-color: white;
+button:disabled {
+  background: none;
+  background-color: rgb(147, 147, 147);
+  cursor: auto;
 }
 
-.links {
+/* Поле редактирования задачи */
+
+.editContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.checkDone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 10px 0;
+
+  width: 190px;
+  height: 22px;
+
+  font-family: inherit;
+  font-size: smaller;
+}
+
+.checkDone label {
+  margin: 0;
+  margin-right: 5px;
+}
+
+.editContainer svg {
+  fill: inherit;
+  margin-left: 5px;
+  height: 14px;
+}
+
+.editContainer a:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+  fill: #00a2d2;
+  transition: all 0.1s ease-out;
+}
+
+/* Модальное окно для ссылок */
+.modalContainer {
+  color: white;
+  position: fixed;
+
   display: flex;
   justify-content: center;
   align-items: center;
 
-  width: 170px;
-  border-radius: 20px;
-  padding: 2px 10px;
-  margin-top: 10px;
-
-  background-color: rgb(233, 233, 233);
-
-  text-decoration: none;
-  font-size: 16px;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
-.links img {
-  margin-right: 6px;
+.modalContainer div {
+  width: 80vw;
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  grid-template-rows: auto auto;
+  gap: 10px;
+}
+
+.modalContainer > div > input {
+  width: 100%;
+  grid-column: span 4;
+  font-size: inherit;
+  border-radius: 5px;
+  border: none;
+  padding: 5px;
+}
+
+.modalContainer > div > span {
+  grid-column: span 3;
+}
+
+.modalContainer > div > button {
+  width: 100px;
 }
 
 @media (max-width: 600px) {
@@ -200,5 +261,26 @@ button:active {
 
   .task {
     margin: 10px 0;
+  }
+
+  .modalContainer div {
+    width: 90vw;
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    grid-template-rows: auto auto auto;
+    gap: 10px;
+  }
+
+  .modalContainer > div > input {
+    width: 100%;
+    grid-column: span 4;
+    font-size: inherit;
+    border-radius: 5px;
+    border: none;
+    padding: 5px;
+  }
+
+  .modalContainer > div > button {
+    width: auto;
   }
 }

@@ -1,40 +1,20 @@
 import { Routes, BrowserRouter, Route, Navigate } from 'react-router-dom';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../firebase';
 import { Auth } from '../components/Auth/Auth';
 import { ProtectedRoute } from '../components/Auth/ProtectedRoute';
-import { useEffect, useState } from 'react';
+import { UserProvider } from '../Contexts/userContext';
 import App from '../components/App/App';
+import { ServerRequestsProvider } from '../Contexts/serverRequests';
 
-export const MainRouter = () => {
-  const [userID, setUserID] = useState(null);
-  const [isFetching, setIsFetching] = useState(true);
-
-  useEffect(() => {
-    return onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const userID = user.email.replace(/@.*/, '');
-        setUserID(userID);
-      } else {
-        setUserID(null);
-      }
-
-      setIsFetching(false);
-    });
-  }, []);
-
-  if (isFetching) return;
-
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route index path="/" element={<Auth user={userID} />}></Route>
-        <Route
-          path="/App"
-          element={<ProtectedRoute user={userID} children={<App user={userID} />} />}
-        />
-        <Route path="/*" element={<Navigate to="/" />} />
-      </Routes>
-    </BrowserRouter>
-  );
-};
+export const MainRouter = () => (
+  <UserProvider>
+    <ServerRequestsProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route index path="/" element={<Auth />}></Route>
+          <Route path="/App" element={<ProtectedRoute children={<App />} />} />
+          <Route path="/*" element={<Navigate to="/" />} />
+        </Routes>
+      </BrowserRouter>
+    </ServerRequestsProvider>
+  </UserProvider>
+);

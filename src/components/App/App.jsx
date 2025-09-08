@@ -4,8 +4,9 @@ import { CreateTask } from './CreateTask';
 import { ref, onValue } from 'firebase/database';
 import { db } from '../../firebase';
 import styles from './Todos.module.css';
+import { useUserContext } from '../../Contexts/userContext';
 
-export default function App({ user }) {
+export default function App() {
   const [todos, setTodos] = useState({});
   const [serverData, setServerData] = useState({});
   const [error, setError] = useState(null);
@@ -16,14 +17,15 @@ export default function App({ user }) {
     searchPhrase: null,
     activeFilter: null,
   });
+  const user = useUserContext();
 
-  // Получение с фильтрацией
+  // Получение заметок
   useEffect(() => {
     const serverData = ref(db, `users/${user}/todos`);
 
     try {
       return onValue(serverData, (snapshot) => {
-        const loadedTodos = snapshot.val();
+        const loadedTodos = snapshot.val() || {};
 
         filters.searchPhrase
           ? findTask(filters.searchPhrase, loadedTodos)
@@ -53,7 +55,7 @@ export default function App({ user }) {
     }
   }
 
-  // Сортировка на клиенте
+  // Сортировка
   function sort(type) {
     let toggler = filters[type] === 'asc' ? 'desc' : 'asc';
     let resultsOfSort = Object.entries(serverData);
@@ -61,20 +63,20 @@ export default function App({ user }) {
     switch (type) {
       case 'byDate':
         if (toggler === 'asc') {
-          resultsOfSort.sort(([key1, val1], [key2, val2]) => val1.date - val2.date);
-        } else {
           resultsOfSort.sort(([key1, val1], [key2, val2]) => val2.date - val1.date);
+        } else {
+          resultsOfSort.sort(([key1, val1], [key2, val2]) => val1.date - val2.date);
         }
         break;
 
       case 'byAlphabet':
         if (toggler === 'asc') {
           resultsOfSort.sort(([key1, val1], [key2, val2]) =>
-            val1.title.localeCompare(val2.title)
+            val2.title.localeCompare(val1.title)
           );
         } else {
           resultsOfSort.sort(([key1, val1], [key2, val2]) =>
-            val2.title.localeCompare(val1.title)
+            val1.title.localeCompare(val2.title)
           );
         }
         break;
@@ -94,16 +96,12 @@ export default function App({ user }) {
 
   return (
     <div className={styles.tasksContainer}>
-      <header className={styles.taskCreator}>
-        <CreateTask clientSearch={findTask} sort={sort} user={user} />
-      </header>
+      <CreateTask clientSearch={findTask} sort={sort} />
       <ul>
         {isLoading ? (
           <div className={styles.loader} />
         ) : (
-          Object.entries(todos).map(([id, task]) => (
-            <TaskItem {...task} id={id} key={id} user={user} />
-          ))
+          Object.entries(todos).map((task) => <TaskItem task={task} key={task[0]} />)
         )}
       </ul>
     </div>

@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { SortPanel } from './SortPanel';
 import { createLinks } from '../../utils';
+import { useServerContext } from '../../Contexts/serverRequests';
 import style from './Todos.module.css';
-import { push, ref } from 'firebase/database';
-import { signOut } from 'firebase/auth';
-import { auth, db } from '../../firebase';
 
-export function CreateTask({ sort, clientSearch, user }) {
+export function CreateTask({ sort, clientSearch }) {
   const [isOpenFilters, setIsOpenFilters] = useState(false);
+  const { logOut, createTask } = useServerContext();
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -28,28 +27,12 @@ export function CreateTask({ sort, clientSearch, user }) {
     newTask.value = '';
   };
 
-  // Создание
-  const createTask = (payload) => {
-    const serverData = ref(db, `users/${user}/todos`);
-    push(serverData, payload).catch((error) => setError('Ошибка при создании объекта'));
-  };
-
-  //Выйти из аккаунта
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-      console.log('Выход из аккаунта');
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
   function openFilters() {
     setIsOpenFilters((prevstate) => !prevstate);
   }
 
   return (
-    <>
+    <header className={style.taskCreator}>
       {isOpenFilters ? (
         <SortPanel sort={sort} openFilters={openFilters} clientSearch={clientSearch} />
       ) : (
@@ -60,10 +43,10 @@ export function CreateTask({ sort, clientSearch, user }) {
           </form>
           <div>
             <button onClick={openFilters}>Сортировка</button>
-            <button onClick={handleSignOut}>Выйти</button>
+            <button onClick={logOut}>Выйти</button>
           </div>
         </>
       )}
-    </>
+    </header>
   );
 }

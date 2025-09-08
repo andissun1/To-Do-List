@@ -22,10 +22,10 @@ export function debounce(func, timeout = 300) {
 
 export const createLinks = (text) => {
   const links = text.match(
-    /(?:https?:\/\/)?(?:www\.)?(?:[\da-z-]+\.)+[a-z]{2,10}(?:\/[^\s/]+)*\/?/gi
+    /(?:https?:\/\/)?(?:www\.)?(?:[\da-z-]+\.)+[a-z]{2,10}(?:\/[^\s/]+)*\/?\s?/gi
   );
   const newTitle = text.replace(
-    /(?:https?:\/\/)?(?:www\.)?(?:[\da-z-]+\.)+[a-z]{2,10}(?:\/[^\s/]+)*\/?/gi,
+    /(?:https?:\/\/)?(?:www\.)?(?:[\da-z-]+\.)+[a-z]{2,10}(?:\/[^\s/]+)*\/?\s?/gi,
     ' '
   );
 

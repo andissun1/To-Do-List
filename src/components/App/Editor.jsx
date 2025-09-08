@@ -2,26 +2,29 @@ import styles from './Todos.module.css';
 import { useState } from 'react';
 import { createLinks } from '../../utils';
 import { Icon } from '../ui/Icons/Icon';
-import { ref, update } from 'firebase/database';
-import { db } from '../../firebase';
+import { LinkEditor } from './LinkEditor';
+import { useServerContext } from '../../Contexts/serverRequests';
+import { Links } from '../ui/Links/Links';
 
-export function Editor({ id, title, handleEdit, user, completed }) {
-  const [data, setData] = useState({ title, completed });
+export function Editor({ handleEdit, task }) {
+  const [data, setData] = useState(task[1]);
+  const [activeLink, setActiveLink] = useState(null);
+  const { updateTask, uploadFile, getTask } = useServerContext();
 
   function handleOnKeyDown(event) {
     if (event.key === 'Enter' && event.ctrlKey) {
-      onSave(id);
+      onSave(task[0]);
     }
   }
 
-  const onSave = (id) => {
+  const onSave = async (id) => {
+    const task = await getTask(id);
+
     if (data.title.includes('://')) {
       const { links, newTitle } = createLinks(data.title);
-      let payload = { ...data, title: newTitle, links };
+      const payload = { ...data, title: newTitle, links };
       updateTask(id, payload);
-    } else {
-      updateTask(id, data);
-    }
+    } else updateTask(id, { ...data, links: task.links || null });
 
     handleEdit();
   };
@@ -39,40 +42,44 @@ export function Editor({ id, title, handleEdit, user, completed }) {
     setData({ ...data, completed: !data.completed });
   }
 
-  // Изменение
-  const updateTask = (id, payload) => {
-    const serverData = ref(db, `users/${user}/todos/${id}`);
-    update(serverData, { ...payload }).catch(() =>
-      setError('Ошибка при запросе на редактирование')
-    );
-  };
-
-  // Загрузка изображений
-  const uploadFile = () => {
-    alert(
-      'Привет! В скором времени будет возможность загружать изображения. Пока что кнопка с картинкой для красоты ✨'
-    );
+  const openLinkEditor = (id) => {
+    setActiveLink(id);
   };
 
   return (
     <div className={styles.task}>
-      <textarea
-        name="title"
-        value={data.title}
-        onChange={onChange}
-        onKeyDown={handleOnKeyDown}
-      />
-      <input type="checkbox" checked={data.completed} onChange={handleCompleted} />
+      {activeLink && (
+        <LinkEditor openLinkEditor={openLinkEditor} activeLink={activeLink} task={task} />
+      )}
+      <div className={styles.editContainer}>
+        <textarea
+          name="title"
+          value={data.title}
+          onChange={onChange}
+          onKeyDown={handleOnKeyDown}
+        />
+        {data.links && (
+          <Links
+            links={task[1].links}
+            children={<Icon name="edit" />}
+            onClick={openLinkEditor}
+          />
+        )}
+        <div className={styles.checkDone}>
+          <label htmlFor="checkbox">Завершено:</label>
+          <input
+            name="checkbox"
+            type="checkbox"
+            checked={data.completed}
+            onChange={handleCompleted}
+          />
+        </div>
+      </div>
+
       <div>
-        <button onClick={() => onSave(id)}>
-          <Icon name="done" />
-        </button>
-        <button onClick={() => uploadFile()}>
-          <Icon name="image" />
-        </button>
-        <button onClick={handleEdit}>
-          <Icon name="cansel" />
-        </button>
+        <button onClick={() => onSave(task[0])} children={<Icon name="done" />} />
+        <button onClick={() => uploadFile()} children={<Icon name="image" />} />
+        <button onClick={handleEdit} children={<Icon name="cansel" />} />
       </div>
     </div>
   );
