@@ -4,8 +4,8 @@ import { Icon } from '../ui/Icons/Icon';
 import { useServerContext } from '../../Contexts/serverRequests';
 
 export const LinkEditor = ({ openLinkEditor, activeLink, task }) => {
-  const { links } = task[1];
-  const [newLink, setNewLink] = useState(links[activeLink]);
+  const { links, fileLinks } = task[1];
+  const [newLink, setNewLink] = useState(links[activeLink] || fileLinks[activeLink]);
   const [error, setError] = useState(null);
   const { deleteLink, updateLink, addLink } = useServerContext();
 

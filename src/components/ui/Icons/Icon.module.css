@@ -7,6 +7,12 @@ svg {
   overflow: visible;
 }
 
+.download {
+  fill: black;
+  margin-right: 5px;
+  height: 14px;
+}
+
 /* .done {
 }
 

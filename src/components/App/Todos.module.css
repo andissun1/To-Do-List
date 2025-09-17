@@ -121,6 +121,12 @@ textarea {
   border: #646ff0;
 }
 
+.hide {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
 /* Оформление всех кнопок */
 
 .taskCreator div:last-of-type {

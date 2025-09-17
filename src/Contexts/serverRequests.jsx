@@ -1,8 +1,10 @@
 import { createContext, useContext } from 'react';
-import { auth, db } from '../firebase';
+import { auth, db, storage } from '../firebase';
 import { signOut } from 'firebase/auth';
 import { get, push, ref, remove, update } from 'firebase/database';
+import { deleteObject, getDownloadURL, ref as storageRef } from 'firebase/storage';
 import { useUserContext } from './userContext';
+import { uploadBytes } from 'firebase/storage';
 
 const ServerRequests = createContext(null);
 export const useServerContext = () => useContext(ServerRequests);
@@ -45,10 +47,35 @@ export const ServerRequestsProvider = ({ children }) => {
   };
 
   // Загрузка изображений
-  const uploadFile = () => {
-    alert(
-      'Привет! В скором времени будет возможность загружать изображения. Пока что кнопка с картинкой для красоты ✨'
-    );
+  const uploadFile = async (path, file) => {
+    const fileRef = storageRef(storage, `${user}/${path}`);
+    await uploadBytes(fileRef, file).then(() => console.log('Файл загружен в стор'));
+
+    return fileRef;
+  };
+
+  // Получение или скачивание изображений
+  const getFile = async (path) => {
+    const fileRef = storageRef(storage, `${path}`);
+    return await getDownloadURL(fileRef);
+  };
+
+  // Удаление файла из стора
+  const deleteFile = (taskID, fileName) => {
+    const key = fileName.replaceAll('?', '.');
+    const fileRef = storageRef(storage, `${user}/${taskID}/${key}`);
+    deleteObject(fileRef)
+      .then(() => {
+        console.log('Файл удалён из стора');
+      })
+      .catch(() => console.log('Ошибка при удалении из стора'));
+
+    const serverData = ref(db, `users/${user}/todos/${taskID}/fileLinks/${fileName}`);
+    remove(serverData)
+      .then(() => console.log('ссылка на файл удалена'))
+      .catch(() => {
+        console.log('Ошибка при удалении');
+      });
   };
 
   const deleteLink = (taskId, linkId) => {
@@ -80,6 +107,8 @@ export const ServerRequestsProvider = ({ children }) => {
         createTask,
         updateTask,
         uploadFile,
+        getFile,
+        deleteFile,
         deleteLink,
         updateLink,
         addLink,

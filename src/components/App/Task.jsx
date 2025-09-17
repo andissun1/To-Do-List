@@ -26,6 +26,7 @@ export function TaskWithDeleteOption({ handleEdit, task }) {
           {task[1].title}
           <div className={links ? styles.linksContainer : null}>
             {links && <Links links={links} />}
+            {task[1].fileLinks && <Links links={task[1].fileLinks} />}
           </div>
         </li>
       )}
